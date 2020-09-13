@@ -1,7 +1,5 @@
-library(DBI)
-library(RSQLite)
-library(tidyverse)
 
+library(tidyverse)
 library(httr) 
 library(jsonlite)
 
@@ -11,21 +9,35 @@ modf <- "?expand=team.schedule.next"
 full_URL <- paste0(base_URL,modf)
 
 
-
+#Get franchise function
 getFranchise <- function(){
   base_url <- "https://records.nhl.com/site/api"
   url <- paste0(base_url, "/", "franchise")
   fromJSON(content(GET(url),"text"),flatten = T)
 }
-getFranchise()
+
+#Get franchise data to dataframe 
+franchise <- getFranchise()
+attributes(franchise)
+franchise_data <- as_tibble(franchise$data)
+
+
+#Get franchise team totals function
 
 getFranTotal <- function(){
   base_url <- "https://records.nhl.com/site/api"
   url <- paste0(base_url, "/", "franchise-team-totals")
   fromJSON(content(GET(url),"text"),flatten = T)
 }
-getFranTotal()
 
+#Get franchise team totals data to dataframe 
+franchise_totals <- getFranTotal()
+attributes(franchise_totals)
+franch_teamTotals <- as_tibble(franchise_totals$data)
+#franch_teamTotals %>% group_by(franchiseId)
+
+
+#Get franchise season record function
 getFranSeasonRecord <- function(ID=NULL){
   base_url <- "https://records.nhl.com/site/api"
   url <- paste0(base_url, "/", "franchise-season-records")
@@ -35,6 +47,13 @@ getFranSeasonRecord <- function(ID=NULL){
   fromJSON(content(GET(url),"text"),flatten = T)
 }
 
+#Get franchise season record data to dataframe 
+season_records <- getFranSeasonRecord()
+attributes(franch_seasonRecords)
+franch_seasonRecords <- as_tibble(season_records$data)
+
+
+#Get franchise goalie record function
 getFranGoalieRecord <- function(ID=NULL){
   base_url <- "https://records.nhl.com/site/api"
   url <- paste0(base_url, "/", "franchise-goalie-records")
@@ -44,6 +63,12 @@ getFranGoalieRecord <- function(ID=NULL){
   fromJSON(content(GET(url),"text"),flatten = T)
 }
 
+#Get goalie record data to dataframe 
+goalie_records <- getFranGoalieRecord()
+attributes(goalie_records)
+franch_goalieRecords <- as_tibble(goalie_records$data)
+
+#Get franchise skater record function
 getFranSkaterRecord <- function(ID=NULL){
   base_url <- "https://records.nhl.com/site/api"
   url <- paste0(base_url, "/", "franchise-skater-records")
@@ -53,10 +78,17 @@ getFranSkaterRecord <- function(ID=NULL){
   fromJSON(content(GET(url),"text"),flatten = T)
 }
 
-names(getFranSkaterRecord()[[1]])
-table(getFranSkaterRecord()[[1]]$franchiseId)
-dim(getFranSkaterRecord(ID=5)[[1]])
+#Get skater record data to dataframe 
+skater_records <- getFranSkaterRecord()
+attributes(skater_records)
+franch_skaterRecords <- as_tibble(skater_records$data)
 
+#names(getFranSkaterRecord()[[1]])
+#table(getFranSkaterRecord()[[1]]$franchiseId)
+#dim(getFranSkaterRecord(ID=5)[[1]])
+
+
+#function to get data from stats endpoint
 getStatData <- function(expand=NULL, season=NULL, teamID=NULL, stats=NULL){
   url <- "https://statsapi.web.nhl.com/api/v1/teams"
   if (!is.null(expand)){
@@ -75,7 +107,7 @@ getStatData <- function(expand=NULL, season=NULL, teamID=NULL, stats=NULL){
   print(url)
   fromJSON(content(GET(url),"text"),flatten = T)
 }
-
+getStatData()
 
 A <- getStatData(expand="team.roster", season="20142015")
 B <- getStatData(expand="team.schedule.previous")
@@ -84,4 +116,4 @@ D <- getStatData(expand="person.names")
 E <- getStatData(expand="team.stats")
 View(A[[2]])
 
-rmarkdown::render(inputfile.Rmd, output_file=“README.md”)
+

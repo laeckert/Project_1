@@ -3,23 +3,38 @@ title: "Project 1 - Hockey Vignette"
 author: "Lucy Eckert"
 date: "9/13/2020"
 output:
+  html_document:
+    df_print: paged
   md_document:
     variant: markdown_github
-
 ---
 
 ```{r setup, include=FALSE}
 
 library(tidyverse)
 library(rmarkdown)
+library(httr) 
+library(jsonlite)
+library(DT)
 # rmarkdown::render("Project_1.Rmd", output_file="README.md")
 ```
 
-```{r}
-as_tibble(iris)
+```{r, echo = FALSE}
+base_URL <- "https://statsapi.web.nhl.com/api/v1/teams"
 ```
 
-```{r}
+```{r, echo = FALSE}
+#Get franchise function
+getFranchise <- function(){
+  base_url <- "https://records.nhl.com/site/api"
+  url <- paste0(base_url, "/", "franchise")
+  fromJSON(content(GET(url),"text"),flatten = T)
+}
 
+#Get franchise data to dataframe 
+franchise <- getFranchise()
+attributes(franchise)
+franchise_data <- as_tibble(franchise$data)
+datatable(franchise_data)
 ```
 

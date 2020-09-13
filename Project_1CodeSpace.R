@@ -2,11 +2,12 @@
 library(tidyverse)
 library(httr) 
 library(jsonlite)
+library(DT)
 
-base_URL <- "https://statsapi.web.nhl.com/api/v1/teams"
-teamID <- 1
-modf <- "?expand=team.schedule.next"
-full_URL <- paste0(base_URL,modf)
+#base_URL <- "https://statsapi.web.nhl.com/api/v1/teams"
+#teamID <- 1
+#modf <- "?expand=team.schedule.next"
+#full_URL <- paste0(base_URL,modf)
 
 
 #Get franchise function
@@ -20,7 +21,7 @@ getFranchise <- function(){
 franchise <- getFranchise()
 attributes(franchise)
 franchise_data <- as_tibble(franchise$data)
-
+datatable(franchise_data)
 
 #Get franchise team totals function
 
@@ -107,7 +108,7 @@ getStatData <- function(expand=NULL, season=NULL, teamID=NULL, stats=NULL){
   print(url)
   fromJSON(content(GET(url),"text"),flatten = T)
 }
-getStatData()
+getStatData
 
 A <- getStatData(expand="team.roster", season="20142015")
 B <- getStatData(expand="team.schedule.previous")

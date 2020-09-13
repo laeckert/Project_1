@@ -12,10 +12,11 @@ output:
 
 library(tidyverse)
 library(rmarkdown)
+# rmarkdown::render("Project_1.Rmd", output_file="README.md")
 ```
 
 ```{r}
-iris
+as_tibble(iris)
 ```
 
 ```{r}

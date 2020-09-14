@@ -11,14 +11,23 @@ library(DT)
 
 
 #Get franchise function
-getFranchise <- function(){
+getFranchise <- function(name=NULL, ID=NULL){
   base_url <- "https://records.nhl.com/site/api"
   url <- paste0(base_url, "/", "franchise")
-  fromJSON(content(GET(url),"text"),flatten = T)
+  dat <- as_tibble(fromJSON(content(GET(url),"text"),flatten = T)$data)
+  # if (!is.null(name)){
+  #   dat <- dat %>% filter(str_detect(teamCommonName, name))
+  # }
+  # if (!is.null(ID)){
+  #   dat <- dat %>% filter(id %in% ID)
+  # }
+  dat
 }
 
 #Get franchise data to dataframe 
 franchise <- getFranchise()
+franchise_canad <- getFranchise(name=c("Maroons"))
+franchise_canad <- getFranchise(ID=c(7))
 attributes(franchise)
 franchise_data <- as_tibble(franchise$data)
 datatable(franchise_data)
@@ -28,7 +37,7 @@ datatable(franchise_data)
 getFranTotal <- function(){
   base_url <- "https://records.nhl.com/site/api"
   url <- paste0(base_url, "/", "franchise-team-totals")
-  fromJSON(content(GET(url),"text"),flatten = T)
+  as_tibble(fromJSON(content(GET(url),"text"),flatten = T)$data)
 }
 
 #Get franchise team totals data to dataframe 
@@ -45,7 +54,7 @@ getFranSeasonRecord <- function(ID=NULL){
   if (is.null(ID)==F){
     url <- paste0(url, "?cayenneExp=franchiseId=", ID)
   }
-  fromJSON(content(GET(url),"text"),flatten = T)
+  as_tibble(fromJSON(content(GET(url),"text"),flatten = T)$data)
 }
 
 #Get franchise season record data to dataframe 
@@ -61,7 +70,7 @@ getFranGoalieRecord <- function(ID=NULL){
   if (is.null(ID)==F){
     url <- paste0(url, "?cayenneExp=franchiseId=", ID)
   }
-  fromJSON(content(GET(url),"text"),flatten = T)
+  as_tibble(fromJSON(content(GET(url),"text"),flatten = T)$data)
 }
 
 #Get goalie record data to dataframe 
@@ -76,7 +85,7 @@ getFranSkaterRecord <- function(ID=NULL){
   if (is.null(ID)==F){
     url <- paste0(url, "?cayenneExp=franchiseId=", ID)
   }
-  fromJSON(content(GET(url),"text"),flatten = T)
+  as_tibble(fromJSON(content(GET(url),"text"),flatten = T)$data)
 }
 
 #Get skater record data to dataframe 
@@ -106,9 +115,10 @@ getStatData <- function(expand=NULL, season=NULL, teamID=NULL, stats=NULL){
     url <- paste0(url, "?stats=", stats)
   }
   print(url)
-  fromJSON(content(GET(url),"text"),flatten = T)
+  as_tibble(fromJSON(content(GET(url),"text"),flatten = T)$teams)
 }
-getStatData
+
+
 
 A <- getStatData(expand="team.roster", season="20142015")
 B <- getStatData(expand="team.schedule.previous")
@@ -118,4 +128,33 @@ E <- getStatData(expand="team.stats")
 View(A[[2]])
 
 #need wrapper function
+wrapper <- function(baseAPI="Record", EndPoint="Franchise", franID=NULL, name=NULL, 
+                    expand=NULL, season=NULL, teamID=NULL, stats=NULL){
+  
+  if (toupper(baseAPI)=="RECORD"){
+    if (grepl("SKATE", toupper(EndPoint))){
+      dat <- getFranSkaterRecord(ID=franID)
+    }
+    else if (grepl("GOAL", toupper(EndPoint))){
+      dat <- getFranGoalieRecord(ID=franID)
+    }
+    else if (grepl("SEASON", toupper(EndPoint))){
+      dat <- getFranSeasonRecord(ID=franID)
+    }
+    else if (grepl("TOTAL", toupper(EndPoint))){
+      dat <- getFranTotal()
+    }
+    else if (grepl("FRANCHISE", toupper(EndPoint))){
+      dat <- getFranchise()
+    }
+  }
+  else if (toupper(baseAPI)=="STATS"){
+    dat <- getStatData(expand=expand, season=season, teamID=teamID, stats=stats)
+  }
+  else{
+    stop("There is no function to call from different APIs")
+  }
+  dat
+}
 
+skate <- wrapper(baseAPI="Record", EndPoint="skate", franID=NULL)

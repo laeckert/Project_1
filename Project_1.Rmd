@@ -20,21 +20,20 @@ library(DT)
 ```
 
 ```{r, echo = FALSE}
-base_URL <- "https://statsapi.web.nhl.com/api/v1/teams"
 ```
 
 ```{r, echo = FALSE}
-#Get franchise function
-getFranchise <- function(){
+getFranchise <- function(name=NULL, ID=NULL){
   base_url <- "https://records.nhl.com/site/api"
   url <- paste0(base_url, "/", "franchise")
-  fromJSON(content(GET(url),"text"),flatten = T)
+  dat <- as_tibble(fromJSON(content(GET(url),"text"),flatten = T)$data)
+  # if (!is.null(name)){
+  #   dat <- dat %>% filter(str_detect(teamCommonName, name))
+  # }
+  # if (!is.null(ID)){
+  #   dat <- dat %>% filter(id %in% ID)
+  # }
+  dat
 }
-
-#Get franchise data to dataframe 
-franchise <- getFranchise()
-attributes(franchise)
-franchise_data <- as_tibble(franchise$data)
-datatable(franchise_data)
 ```
 

@@ -62,16 +62,23 @@ franch_teamTotals <- as_tibble(franchise_totals$data)
 
 
 #Get franchise season record function. ADD NAME FUNCTION
-getFranSeasonRecord <- function(ID=NULL){
+getFranSeasonRecord <- function(name = NULL, ID=NULL){
   base_url <- "https://records.nhl.com/site/api"
   url <- paste0(base_url, "/", "franchise-season-records")
   if (is.null(ID)==F){
     url <- paste0(url, "?cayenneExp=franchiseId=", ID)
   }
-  as_tibble(fromJSON(content(GET(url),"text"),flatten = T)$data)
+  dat <- as_tibble(fromJSON(content(GET(url),"text"),flatten = T)$data)
+  if (!is.null(name)){
+    dat <- dat %>% filter(franchiseName %in% name)
+  }
+  if (!is.null(ID)){
+    dat <- dat %>% filter(franchiseId %in% ID)
+  }
+  dat
 }
 
-Franch_SnsRcrds <- getFranSeasonRecord(ID = 6)
+Franch_SnsRcrds <- getFranSeasonRecord(name = "Boston Bruins")
 
 
 
@@ -83,19 +90,27 @@ franch_seasonRecords <- as_tibble(season_records$data)
 
 
 
-#Get franchise goalie record function
-getFranGoalieRecord <- function(ID=NULL){
+#Get franchise goalie record function in RMD, GOOD
+getFranGoalieRecord <- function(name = NULL, ID=NULL){
   base_url <- "https://records.nhl.com/site/api"
   url <- paste0(base_url, "/", "franchise-goalie-records")
   if (is.null(ID)==F){
     url <- paste0(url, "?cayenneExp=franchiseId=", ID)
   }
-  as_tibble(fromJSON(content(GET(url),"text"),flatten = T)$data)
+  dat <- as_tibble(fromJSON(content(GET(url),"text"),flatten = T)$data)
+  if (!is.null(name)){
+    dat <- dat %>% filter(franchiseName %in% name)
+  }
+  if (!is.null(ID)){
+    dat <- dat %>% filter(franchiseId %in% ID)
+  }
+  dat
 }
 
-Franch_GoalRcrds <- getFranGoalieRecord(ID = 6)
+Franch_GoalRcrds <- getFranGoalieRecord(name = "Boston Bruins")
+Franch_GoalRcrds
 
-#Get goalie record data to dataframe 
+#Get goalie record data to dataframe DONT NEED
 goalie_records <- getFranGoalieRecord()
 attributes(goalie_records)
 franch_goalieRecords <- as_tibble(goalie_records$data)
@@ -103,16 +118,24 @@ franch_goalieRecords <- as_tibble(goalie_records$data)
 
 
 #Get franchise skater record function
-getFranSkaterRecord <- function(ID=NULL){
+getFranSkaterRecord <- function(name = NULL, ID=NULL){
   base_url <- "https://records.nhl.com/site/api"
   url <- paste0(base_url, "/", "franchise-skater-records")
   if (is.null(ID)==F){
     url <- paste0(url, "?cayenneExp=franchiseId=", ID)
   }
-  as_tibble(fromJSON(content(GET(url),"text"),flatten = T)$data)
+  dat <- as_tibble(fromJSON(content(GET(url),"text"),flatten = T)$data)
+  if (!is.null(name)){
+    dat <- dat %>% filter(franchiseName %in% name)
+  }
+  if (!is.null(ID)){
+    dat <- dat %>% filter(franchiseId %in% ID)
+  }
+  dat
 }
 
-
+Franch_Sk8rRcrds <- getFranSkaterRecord(name = "Boston Bruins")
+Franch_Sk8rRcrds
 
 #Get skater record data to dataframe 
 skater_records <- getFranSkaterRecord()
@@ -126,7 +149,7 @@ franch_skaterRecords <- as_tibble(skater_records$data)
 
 
 #function to get data from stats endpoint
-getStatData <- function(expand=NULL, season=NULL, teamID=NULL, stats=NULL){
+getStatData <- function(name = NULL, expand=NULL, season=NULL, teamID=NULL, stats=NULL){
   url <- "https://statsapi.web.nhl.com/api/v1/teams"
   if (!is.null(expand)){
     url <- paste0(url, "?expand=", expand)
@@ -141,8 +164,14 @@ getStatData <- function(expand=NULL, season=NULL, teamID=NULL, stats=NULL){
   if(!is.null(stats)){
     url <- paste0(url, "?stats=", stats)
   }
-  print(url)
-  as_tibble(fromJSON(content(GET(url),"text"),flatten = T)$teams)
+  dat <- as_tibble(fromJSON(content(GET(url),"text"),flatten = T)$teams)
+  if (!is.null(name)){
+    dat <- dat %>% filter(teamName %in% name)
+  }
+  if (!is.null(teamID)){
+    dat <- dat %>% filter(franchiseId %in% teamID)
+  }
+  dat
 }
 
 
@@ -152,6 +181,8 @@ B <- getStatData(expand="team.schedule.previous")
 C <- getStatData(expand="team.schedule.next")
 D <- getStatData(expand="person.names")
 E <- getStatData(expand="team.stats")
+F <- getStatData()
+
 View(A[[2]])
 
 #wrapper function
@@ -185,3 +216,4 @@ wrapper <- function(baseAPI="Record", EndPoint="Franchise", franID=NULL, name=NU
 }
 
 skate <- wrapper(baseAPI="Record", EndPoint="skate", franID=NULL)
+wrappertest <- wrapper()

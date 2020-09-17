@@ -72,17 +72,27 @@ Return Franchise Season Records
 
 ``` r
 #NEEDS NAME SEARCH
-getFranSeasonRecord <- function(ID=NULL){
+getFranSeasonRecord <- function(name = NULL, ID=NULL){
   base_url <- "https://records.nhl.com/site/api"
   url <- paste0(base_url, "/", "franchise-season-records")
   if (is.null(ID)==F){
     url <- paste0(url, "?cayenneExp=franchiseId=", ID)
   }
-  as_tibble(fromJSON(content(GET(url),"text"),flatten = T)$data)
+  dat <- as_tibble(fromJSON(content(GET(url),"text"),flatten = T)$data)
+  if (!is.null(name)){
+    dat <- dat %>% filter(franchiseName %in% name)
+  }
+  if (!is.null(ID)){
+    dat <- dat %>% filter(franchiseId %in% ID)
+  }
+  dat
 }
 
-Franch_SnsRcrds <- getFranSeasonRecord(ID = 6)
+Franch_SnsRcrds <- getFranSeasonRecord(name = "Boston Bruins")
 ```
+
+    ## Warning in if (is.null(ID) == F) {: the condition has length > 1 and only
+    ## the first element will be used
 
     ## No encoding supplied: defaulting to UTF-8.
 
@@ -120,18 +130,27 @@ Franch_SnsRcrds
 Return Goalie Records
 
 ``` r
-#needs NAME SEARCH
-getFranGoalieRecord <- function(ID=NULL){
+getFranGoalieRecord <- function(name = NULL, ID=NULL){
   base_url <- "https://records.nhl.com/site/api"
   url <- paste0(base_url, "/", "franchise-goalie-records")
   if (is.null(ID)==F){
     url <- paste0(url, "?cayenneExp=franchiseId=", ID)
   }
-  as_tibble(fromJSON(content(GET(url),"text"),flatten = T)$data)
+  dat <- as_tibble(fromJSON(content(GET(url),"text"),flatten = T)$data)
+   if (!is.null(name)){
+    dat <- dat %>% filter(franchiseName %in% name)
+  }
+  if (!is.null(ID)){
+    dat <- dat %>% filter(franchiseId %in% ID)
+  }
+  dat
 }
 
-Franch_GoalRcrds <- getFranGoalieRecord(ID = 6)
+Franch_GoalRcrds <- getFranGoalieRecord(name = "Boston Bruins")
 ```
+
+    ## Warning in if (is.null(ID) == F) {: the condition has length > 1 and only
+    ## the first element will be used
 
     ## No encoding supplied: defaulting to UTF-8.
 
@@ -162,3 +181,130 @@ Franch_GoalRcrds
     ## #   positionCode <chr>, rookieGamesPlayed <int>, rookieShutouts <int>,
     ## #   rookieWins <int>, seasons <int>, shutouts <int>, ties <int>,
     ## #   wins <int>
+
+Return Skater Records
+
+``` r
+getFranSkaterRecord <- function(name = NULL, ID=NULL){
+  base_url <- "https://records.nhl.com/site/api"
+  url <- paste0(base_url, "/", "franchise-skater-records")
+  if (is.null(ID)==F){
+    url <- paste0(url, "?cayenneExp=franchiseId=", ID)
+  }
+  dat <- as_tibble(fromJSON(content(GET(url),"text"),flatten = T)$data)
+  if (!is.null(name)){
+    dat <- dat %>% filter(franchiseName %in% name)
+  }
+  if (!is.null(ID)){
+    dat <- dat %>% filter(franchiseId %in% ID)
+  }
+  dat
+}
+
+Franch_Sk8rRcrds <- getFranSkaterRecord(name = "Boston Bruins")
+```
+
+    ## Warning in if (is.null(ID) == F) {: the condition has length > 1 and only
+    ## the first element will be used
+
+    ## No encoding supplied: defaulting to UTF-8.
+
+``` r
+Franch_Sk8rRcrds
+```
+
+    ## # A tibble: 910 x 30
+    ##       id activePlayer assists firstName franchiseId franchiseName
+    ##    <int> <lgl>          <int> <chr>           <int> <chr>        
+    ##  1 16890 FALSE            794 Johnny              6 Boston Bruins
+    ##  2 16892 FALSE           1111 Ray                 6 Boston Bruins
+    ##  3 17027 FALSE            402 Terry               6 Boston Bruins
+    ##  4 17046 FALSE            553 Phil                6 Boston Bruins
+    ##  5 17078 FALSE            624 Bobby               6 Boston Bruins
+    ##  6 17108 FALSE             20 Jay                 6 Boston Bruins
+    ##  7 17157 FALSE            385 Ken                 6 Boston Bruins
+    ##  8 17161 FALSE            496 Rick                6 Boston Bruins
+    ##  9 17194 FALSE              4 Henry               6 Boston Bruins
+    ## 10 17197 FALSE             20 Norm                6 Boston Bruins
+    ## # ... with 900 more rows, and 24 more variables: gameTypeId <int>,
+    ## #   gamesPlayed <int>, goals <int>, lastName <chr>,
+    ## #   mostAssistsGameDates <chr>, mostAssistsOneGame <int>,
+    ## #   mostAssistsOneSeason <int>, mostAssistsSeasonIds <chr>,
+    ## #   mostGoalsGameDates <chr>, mostGoalsOneGame <int>,
+    ## #   mostGoalsOneSeason <int>, mostGoalsSeasonIds <chr>,
+    ## #   mostPenaltyMinutesOneSeason <int>, mostPenaltyMinutesSeasonIds <chr>,
+    ## #   mostPointsGameDates <chr>, mostPointsOneGame <int>,
+    ## #   mostPointsOneSeason <int>, mostPointsSeasonIds <chr>,
+    ## #   penaltyMinutes <int>, playerId <int>, points <int>,
+    ## #   positionCode <chr>, rookiePoints <int>, seasons <int>
+
+Stats API - make a note that this only works for current teams
+
+``` r
+getStatData <- function(name = NULL, expand=NULL, season=NULL, teamID=NULL, stats=NULL){
+  url <- "https://statsapi.web.nhl.com/api/v1/teams"
+  if (!is.null(expand)){
+    url <- paste0(url, "?expand=", expand)
+  }
+  if (!is.null(season)){
+    url <- paste0(url, "&season=", season)
+  }
+  if(!is.null(teamID)){
+    teams <- paste(teamID, collapse = ",")
+    url <- paste0(url, "?teamId=", teams)
+  }
+  if(!is.null(stats)){
+    url <- paste0(url, "?stats=", stats)
+  }
+  dat <- as_tibble(fromJSON(content(GET(url),"text"),flatten = T)$teams)
+  if (!is.null(name)){
+    dat <- dat %>% filter(teamName %in% name)
+  }
+  if (!is.null(teamID)){
+    dat <- dat %>% filter(franchiseId %in% teamID)
+  }
+  dat
+}
+
+
+
+A <- getStatData(expand="team.roster", season="20142015")
+B <- getStatData(expand="team.schedule.previous")
+C <- getStatData(expand="team.schedule.next")
+D <- getStatData(expand="person.names")
+E <- getStatData(expand="team.stats")
+F <- getStatData(teamID = 6)
+```
+
+wrapper function
+
+``` r
+wrapper <- function(baseAPI="Record", EndPoint="Franchise", franID=NULL, name=NULL, 
+                    expand=NULL, season=NULL, teamID=NULL, stats=NULL){
+  
+  if (toupper(baseAPI)=="RECORD"){
+    if (grepl("SKATE", toupper(EndPoint))){
+      dat <- getFranSkaterRecord(ID=franID)
+    }
+    else if (grepl("GOAL", toupper(EndPoint))){
+      dat <- getFranGoalieRecord(ID=franID)
+    }
+    else if (grepl("SEASON", toupper(EndPoint))){
+      dat <- getFranSeasonRecord(ID=franID)
+    }
+    else if (grepl("TOTAL", toupper(EndPoint))){
+      dat <- getFranTotal()
+    }
+    else if (grepl("FRANCHISE", toupper(EndPoint))){
+      dat <- getFranchise()
+    }
+  }
+  else if (toupper(baseAPI)=="STATS"){
+    dat <- getStatData(expand=expand, season=season, teamID=teamID, stats=stats)
+  }
+  else{
+    stop("There is no function to call from different APIs")
+  }
+  dat
+}
+```

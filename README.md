@@ -1,3 +1,6 @@
+![Terry “Bloody”
+O’Reilly](https://en.wikipedia.org/wiki/File:Terry_O%27Reilly_78-79.JPG)
+
 Return Parsed Franchise Data
 
 ``` r
@@ -55,13 +58,13 @@ FranchiseTots
 ```
 
     ## # A tibble: 2 x 30
-    ##      id activeFranchise firstSeasonId franchiseId gameTypeId gamesPlayed
-    ##   <int>           <int>         <int>       <int>      <int>       <int>
-    ## 1    11               1      19241925           6          2        6570
-    ## 2    12               1      19241925           6          3         664
-    ## # ... with 24 more variables: goalsAgainst <int>, goalsFor <int>,
-    ## #   homeLosses <int>, homeOvertimeLosses <int>, homeTies <int>,
-    ## #   homeWins <int>, lastSeasonId <int>, losses <int>,
+    ##      id activeFranchise firstSeasonId franchiseId gameTypeId
+    ##   <int>           <int>         <int>       <int>      <int>
+    ## 1    11               1      19241925           6          2
+    ## 2    12               1      19241925           6          3
+    ## # ... with 25 more variables: gamesPlayed <int>, goalsAgainst <int>,
+    ## #   goalsFor <int>, homeLosses <int>, homeOvertimeLosses <int>,
+    ## #   homeTies <int>, homeWins <int>, lastSeasonId <int>, losses <int>,
     ## #   overtimeLosses <int>, penaltyMinutes <int>, pointPctg <dbl>,
     ## #   points <int>, roadLosses <int>, roadOvertimeLosses <int>,
     ## #   roadTies <int>, roadWins <int>, shootoutLosses <int>,
@@ -91,9 +94,6 @@ getFranSeasonRecord <- function(name = NULL, ID=NULL){
 Franch_SnsRcrds <- getFranSeasonRecord(name = "Boston Bruins")
 ```
 
-    ## Warning in if (is.null(ID) == F) {: the condition has length > 1 and only
-    ## the first element will be used
-
     ## No encoding supplied: defaulting to UTF-8.
 
 ``` r
@@ -106,26 +106,28 @@ Franch_SnsRcrds
     ## 1     6         147              172 1952-53 (70)     1955-56 (70)    
     ## # ... with 52 more variables: fewestLosses <int>,
     ## #   fewestLossesSeasons <chr>, fewestPoints <int>,
-    ## #   fewestPointsSeasons <chr>, fewestTies <int>, fewestTiesSeasons <chr>,
-    ## #   fewestWins <int>, fewestWinsSeasons <chr>, franchiseId <int>,
-    ## #   franchiseName <chr>, homeLossStreak <int>, homeLossStreakDates <chr>,
+    ## #   fewestPointsSeasons <chr>, fewestTies <int>,
+    ## #   fewestTiesSeasons <chr>, fewestWins <int>,
+    ## #   fewestWinsSeasons <chr>, franchiseId <int>, franchiseName <chr>,
+    ## #   homeLossStreak <int>, homeLossStreakDates <chr>,
     ## #   homePointStreak <int>, homePointStreakDates <chr>,
     ## #   homeWinStreak <int>, homeWinStreakDates <chr>,
     ## #   homeWinlessStreak <int>, homeWinlessStreakDates <chr>,
     ## #   lossStreak <int>, lossStreakDates <chr>, mostGameGoals <int>,
     ## #   mostGameGoalsDates <chr>, mostGoals <int>, mostGoalsAgainst <int>,
     ## #   mostGoalsAgainstSeasons <chr>, mostGoalsSeasons <chr>,
-    ## #   mostLosses <int>, mostLossesSeasons <chr>, mostPenaltyMinutes <int>,
-    ## #   mostPenaltyMinutesSeasons <chr>, mostPoints <int>,
-    ## #   mostPointsSeasons <chr>, mostShutouts <int>,
+    ## #   mostLosses <int>, mostLossesSeasons <chr>,
+    ## #   mostPenaltyMinutes <int>, mostPenaltyMinutesSeasons <chr>,
+    ## #   mostPoints <int>, mostPointsSeasons <chr>, mostShutouts <int>,
     ## #   mostShutoutsSeasons <chr>, mostTies <int>, mostTiesSeasons <chr>,
     ## #   mostWins <int>, mostWinsSeasons <chr>, pointStreak <int>,
     ## #   pointStreakDates <chr>, roadLossStreak <int>,
     ## #   roadLossStreakDates <chr>, roadPointStreak <int>,
     ## #   roadPointStreakDates <chr>, roadWinStreak <int>,
     ## #   roadWinStreakDates <chr>, roadWinlessStreak <int>,
-    ## #   roadWinlessStreakDates <chr>, winStreak <int>, winStreakDates <chr>,
-    ## #   winlessStreak <int>, winlessStreakDates <chr>
+    ## #   roadWinlessStreakDates <chr>, winStreak <int>,
+    ## #   winStreakDates <chr>, winlessStreak <int>,
+    ## #   winlessStreakDates <chr>
 
 Return Goalie Records
 
@@ -148,9 +150,6 @@ getFranGoalieRecord <- function(name = NULL, ID=NULL){
 
 Franch_GoalRcrds <- getFranGoalieRecord(name = "Boston Bruins")
 ```
-
-    ## Warning in if (is.null(ID) == F) {: the condition has length > 1 and only
-    ## the first element will be used
 
     ## No encoding supplied: defaulting to UTF-8.
 
@@ -204,9 +203,6 @@ getFranSkaterRecord <- function(name = NULL, ID=NULL){
 Franch_Sk8rRcrds <- getFranSkaterRecord(name = "Boston Bruins")
 ```
 
-    ## Warning in if (is.null(ID) == F) {: the condition has length > 1 and only
-    ## the first element will be used
-
     ## No encoding supplied: defaulting to UTF-8.
 
 ``` r
@@ -232,11 +228,12 @@ Franch_Sk8rRcrds
     ## #   mostAssistsOneSeason <int>, mostAssistsSeasonIds <chr>,
     ## #   mostGoalsGameDates <chr>, mostGoalsOneGame <int>,
     ## #   mostGoalsOneSeason <int>, mostGoalsSeasonIds <chr>,
-    ## #   mostPenaltyMinutesOneSeason <int>, mostPenaltyMinutesSeasonIds <chr>,
-    ## #   mostPointsGameDates <chr>, mostPointsOneGame <int>,
-    ## #   mostPointsOneSeason <int>, mostPointsSeasonIds <chr>,
-    ## #   penaltyMinutes <int>, playerId <int>, points <int>,
-    ## #   positionCode <chr>, rookiePoints <int>, seasons <int>
+    ## #   mostPenaltyMinutesOneSeason <int>,
+    ## #   mostPenaltyMinutesSeasonIds <chr>, mostPointsGameDates <chr>,
+    ## #   mostPointsOneGame <int>, mostPointsOneSeason <int>,
+    ## #   mostPointsSeasonIds <chr>, penaltyMinutes <int>, playerId <int>,
+    ## #   points <int>, positionCode <chr>, rookiePoints <int>,
+    ## #   seasons <int>
 
 Stats API - make a note that this only works for current teams
 
@@ -308,3 +305,10 @@ wrapper <- function(baseAPI="Record", EndPoint="Franchise", franID=NULL, name=NU
   dat
 }
 ```
+
+``` r
+plot_col <- ggplot(data = E, aes(x = division.name))
+plot_col + geom_bar() + labs(x = "Teams per Division")
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-9-1.png)

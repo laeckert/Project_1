@@ -65,7 +65,7 @@ franch_teamTotals <- as_tibble(franchise_totals$data)
 getFranSeasonRecord <- function(name = NULL, ID=NULL){
   base_url <- "https://records.nhl.com/site/api"
   url <- paste0(base_url, "/", "franchise-season-records")
-  if (is.null(ID)==F){
+  if (is.null(ID)==FALSE){
     url <- paste0(url, "?cayenneExp=franchiseId=", ID)
   }
   dat <- as_tibble(fromJSON(content(GET(url),"text"),flatten = T)$data)
@@ -78,7 +78,7 @@ getFranSeasonRecord <- function(name = NULL, ID=NULL){
   dat
 }
 
-Franch_SnsRcrds <- getFranSeasonRecord(name = "Boston Bruins")
+Franch_SnsRcrds <- getFranSeasonRecord()
 
 
 
@@ -217,3 +217,16 @@ wrapper <- function(baseAPI="Record", EndPoint="Franchise", franID=NULL, name=NU
 
 skate <- wrapper(baseAPI="Record", EndPoint="skate", franID=NULL)
 wrappertest <- wrapper()
+
+#Some analysis
+
+#What divisions have the most teams? dont use, kinda boring
+plot_col <- ggplot(data = E, aes(x = division.name))
+plot_col + geom_bar() + labs(x = "Teams per Division")
+
+#are high performing goalies in the Boston Bruins more likely to be 
+
+#new variable called average points per season
+
+getwd()
+setwd

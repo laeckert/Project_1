@@ -14,11 +14,15 @@ library(rmarkdown)
 library(httr) 
 library(jsonlite)
 library(DT)
+library(ggplot2)
 # rmarkdown::render("Project_1.Rmd", output_file="README.md")
 ```
 
 ```{r, echo = FALSE}
 ```
+
+
+![Terry "Bloody" O'Reilly](https://en.wikipedia.org/wiki/File:Terry_O%27Reilly_78-79.JPG)
 
 Return Parsed Franchise Data
 ```{r}
@@ -193,5 +197,10 @@ wrapper <- function(baseAPI="Record", EndPoint="Franchise", franID=NULL, name=NU
   }
   dat
 }
+```
+
+```{r}
+plot_col <- ggplot(data = E, aes(x = division.name))
+plot_col + geom_bar() + labs(x = "Teams per Division")
 ```
 

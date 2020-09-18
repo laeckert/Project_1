@@ -97,7 +97,6 @@ FranchiseTots
 Return Franchise Season Records
 
 ``` r
-#NEEDS NAME SEARCH
 getFranSeasonRecord <- function(name = NULL, ID=NULL){
   base_url <- "https://records.nhl.com/site/api"
   url <- paste0(base_url, "/", "franchise-season-records")
@@ -351,7 +350,7 @@ plot_col <- ggplot(data = E, aes(x = division.name))
 plot_col + geom_bar() + labs(x = "Teams per Division")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-9-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-10-1.png)
 
 ### Now that we have data, let’s use it to answer some questions.
 
@@ -393,6 +392,72 @@ kable(table1)
 | L            |  5.860032|
 | R            |  6.589049|
 
+#### Get stats for current teams only
+
+First Ill the isolate only the current franchises. To do this, I’ll pull
+the franchises that are included in the Endpoint that lists upcoming
+games. Then, I’ll join it with season record. We now have a massive
+dataset of current franchises full of lots of useful stats
+
+``` r
+C <- getStatData(expand="team.schedule.next")
+new <- inner_join(C, franch_seasonRecords, by = "franchiseId")
+new
+```
+
+    ## # A tibble: 31 x 90
+    ##     id.x name  link  abbreviation teamName locationName firstYearOfPlay
+    ##    <int> <chr> <chr> <chr>        <chr>    <chr>        <chr>          
+    ##  1     1 New ~ /api~ NJD          Devils   New Jersey   1982           
+    ##  2     2 New ~ /api~ NYI          Islande~ New York     1972           
+    ##  3     3 New ~ /api~ NYR          Rangers  New York     1926           
+    ##  4     4 Phil~ /api~ PHI          Flyers   Philadelphia 1967           
+    ##  5     5 Pitt~ /api~ PIT          Penguins Pittsburgh   1967           
+    ##  6     6 Bost~ /api~ BOS          Bruins   Boston       1924           
+    ##  7     7 Buff~ /api~ BUF          Sabres   Buffalo      1970           
+    ##  8     8 Mont~ /api~ MTL          Canadie~ Montréal     1909           
+    ##  9     9 Otta~ /api~ OTT          Senators Ottawa       1990           
+    ## 10    10 Toro~ /api~ TOR          Maple L~ Toronto      1917           
+    ## # ... with 21 more rows, and 83 more variables: shortName <chr>,
+    ## #   officialSiteUrl <chr>, franchiseId <int>, active <lgl>,
+    ## #   venue.name <chr>, venue.link <chr>, venue.city <chr>,
+    ## #   venue.id <int>, venue.timeZone.id <chr>,
+    ## #   venue.timeZone.offset <int>, venue.timeZone.tz <chr>,
+    ## #   division.id <int>, division.name <chr>, division.nameShort <chr>,
+    ## #   division.link <chr>, division.abbreviation <chr>,
+    ## #   conference.id <int>, conference.name <chr>, conference.link <chr>,
+    ## #   franchise.franchiseId <int>, franchise.teamName <chr>,
+    ## #   franchise.link <chr>, nextGameSchedule.totalItems <int>,
+    ## #   nextGameSchedule.totalEvents <int>,
+    ## #   nextGameSchedule.totalGames <int>,
+    ## #   nextGameSchedule.totalMatches <int>,
+    ## #   nextGameSchedule.dates <list>, id.y <int>, fewestGoals <int>,
+    ## #   fewestGoalsAgainst <int>, fewestGoalsAgainstSeasons <chr>,
+    ## #   fewestGoalsSeasons <chr>, fewestLosses <int>,
+    ## #   fewestLossesSeasons <chr>, fewestPoints <int>,
+    ## #   fewestPointsSeasons <chr>, fewestTies <int>,
+    ## #   fewestTiesSeasons <chr>, fewestWins <int>,
+    ## #   fewestWinsSeasons <chr>, franchiseName <chr>,
+    ## #   homeLossStreak <int>, homeLossStreakDates <chr>,
+    ## #   homePointStreak <int>, homePointStreakDates <chr>,
+    ## #   homeWinStreak <int>, homeWinStreakDates <chr>,
+    ## #   homeWinlessStreak <int>, homeWinlessStreakDates <chr>,
+    ## #   lossStreak <int>, lossStreakDates <chr>, mostGameGoals <int>,
+    ## #   mostGameGoalsDates <chr>, mostGoals <int>, mostGoalsAgainst <int>,
+    ## #   mostGoalsAgainstSeasons <chr>, mostGoalsSeasons <chr>,
+    ## #   mostLosses <int>, mostLossesSeasons <chr>,
+    ## #   mostPenaltyMinutes <int>, mostPenaltyMinutesSeasons <chr>,
+    ## #   mostPoints <int>, mostPointsSeasons <chr>, mostShutouts <int>,
+    ## #   mostShutoutsSeasons <chr>, mostTies <int>, mostTiesSeasons <chr>,
+    ## #   mostWins <int>, mostWinsSeasons <chr>, pointStreak <int>,
+    ## #   pointStreakDates <chr>, roadLossStreak <int>,
+    ## #   roadLossStreakDates <chr>, roadPointStreak <int>,
+    ## #   roadPointStreakDates <chr>, roadWinStreak <int>,
+    ## #   roadWinStreakDates <chr>, roadWinlessStreak <int>,
+    ## #   roadWinlessStreakDates <chr>, winStreak <int>,
+    ## #   winStreakDates <chr>, winlessStreak <int>,
+    ## #   winlessStreakDates <chr>
+
 #### Are Pugnacious Bruins More Likely to Be High Scorers?
 
 ``` r
@@ -405,4 +470,104 @@ scatter + geom_point() + geom_smooth(method = lm, color = "yellow") +
 
     ## `geom_smooth()` using formula 'y ~ x'
 
-![](README_files/figure-markdown_github/unnamed-chunk-11-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-13-1.png)
+
+#### Looking at Lifetime Stats by Skater Position
+
+``` r
+Bruin_Rcrds <- getFranSkaterRecord(name = "Boston Bruins")
+```
+
+    ## Warning in if (is.null(ID) == F) {: the condition has length > 1 and
+    ## only the first element will be used
+
+    ## No encoding supplied: defaulting to UTF-8.
+
+``` r
+selectBruins <- Bruin_Rcrds %>% select(penaltyMinutes, goals, seasons, assists, positionCode)
+bruinstable <- function(position){
+  data <- selectBruins %>% filter(positionCode == position) %>% select(-positionCode)
+  kable(apply(data, 2, summary), caption = paste("Summary of Position", position), 
+        digit = 1)
+}
+bruinstable("C")
+```
+
+|         |  penaltyMinutes|  goals|  seasons|  assists|
+|:--------|---------------:|------:|--------:|--------:|
+| Min.    |             0.0|    0.0|      1.0|      0.0|
+| 1st Qu. |             4.0|    0.0|      1.0|      1.0|
+| Median  |            20.0|    5.0|      2.0|      8.0|
+| Mean    |            64.8|   28.4|      2.7|     42.3|
+| 3rd Qu. |            72.0|   24.0|      4.0|     36.0|
+| Max.    |           744.0|  459.0|     16.0|    553.0|
+
+``` r
+bruinstable("D")
+```
+
+|         |  penaltyMinutes|  goals|  seasons|  assists|
+|:--------|---------------:|------:|--------:|--------:|
+| Min.    |             0.0|    0.0|      1.0|      0.0|
+| 1st Qu. |             6.0|    0.0|      1.0|      1.0|
+| Median  |            38.5|    2.0|      2.0|      7.5|
+| Mean    |           129.3|   11.5|      3.1|     34.0|
+| 3rd Qu. |           152.2|    9.0|      3.0|     27.0|
+| Max.    |          1552.0|  395.0|     21.0|   1111.0|
+
+``` r
+bruinstable("L")
+```
+
+|         |  penaltyMinutes|  goals|  seasons|  assists|
+|:--------|---------------:|------:|--------:|--------:|
+| Min.    |             0.0|    0.0|      1.0|      0.0|
+| 1st Qu. |             4.0|    1.0|      1.0|      1.0|
+| Median  |            25.0|    5.0|      2.0|      7.0|
+| Mean    |            87.5|   25.8|      2.8|     33.5|
+| 3rd Qu. |            80.0|   25.0|      3.0|     26.0|
+| Max.    |          1039.0|  545.0|     21.0|    794.0|
+
+``` r
+bruinstable("R")
+```
+
+|         |  penaltyMinutes|  goals|  seasons|  assists|
+|:--------|---------------:|------:|--------:|--------:|
+| Min.    |             0.0|    0.0|      1.0|      0.0|
+| 1st Qu. |             4.0|    0.0|      1.0|      1.0|
+| Median  |            23.0|    6.0|      2.0|      7.0|
+| Mean    |            92.2|   28.3|      2.7|     33.3|
+| 3rd Qu. |            84.5|   26.0|      3.0|     24.2|
+| Max.    |          2095.0|  402.0|     20.0|    496.0|
+
+#### Does early suscess lead to career success?
+
+We can see that the majority of players are average caliber (average on
+the Bruins still being an amazing athlete!), but that the players with
+“High” - over 41 rookie points, more likely to Rockstar players during
+their careers.
+
+``` r
+Bruin_Sk8rRcrds <- getFranSkaterRecord(name = "Boston Bruins")
+```
+
+    ## Warning in if (is.null(ID) == F) {: the condition has length > 1 and
+    ## only the first element will be used
+
+    ## No encoding supplied: defaulting to UTF-8.
+
+``` r
+Bruin_Sk8rRcrds$rookiePoints <- ifelse(Bruin_Sk8rRcrds$rookiePoints >= 41, "High",
+                                       ifelse(Bruin_Sk8rRcrds$rookiePoints >= 21, "Elevated",
+                                              ifelse(Bruin_Sk8rRcrds$rookiePoints >= 11, "Moderate", "Average")))
+
+Bruin_Sk8rRcrds$goals <- ifelse(Bruin_Sk8rRcrds$goals >= 99, "Rockstar",
+                                ifelse(Bruin_Sk8rRcrds$goals >= 31, "Star",
+                                       ifelse(Bruin_Sk8rRcrds$goals >= 11, "Valuable", "Ok")))
+
+ggplot(Bruin_Sk8rRcrds, aes(x = rookiePoints, na.rm = TRUE)) + geom_bar(aes(fill = goals), position = "stack") + 
+  xlab("Boston Bruins Rookie Points") + scale_fill_discrete(name = "")
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-15-1.png)

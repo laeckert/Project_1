@@ -27,14 +27,6 @@ getFranchise <- function(name=NULL, ID=NULL){
 FranchiseInfo <- getFranchise()
 
 
-#Get franchise data to dataframe DONT NEED IN RMD
-franchise <- getFranchise()
-franchise_canad <- getFranchise(name=c("Maroons"))
-franchise_canad <- getFranchise(ID=c(7))
-attributes(franchise)
-franchise_data <- as_tibble(franchise$data)
-datatable(franchise_data)
-
 #Get franchise team totals function GOOD, In RMD
 
 getFranTotal <- function(name=NULL, ID=NULL){
@@ -50,7 +42,7 @@ getFranTotal <- function(name=NULL, ID=NULL){
   dat
 }
 
-FranchiseTots <- getFranTotal(ID = 6)
+FranchiseTots <- getFranTotal()
 
 #Get franchise team totals data to dataframe DONT NEED IN RMD
 franchise_totals <- getFranTotal()
@@ -79,14 +71,6 @@ getFranSeasonRecord <- function(name = NULL, ID=NULL){
 }
 
 Franch_SnsRcrds <- getFranSeasonRecord()
-
-
-
-#Get franchise season record data to dataframe 
-season_records <- getFranSeasonRecord()
-attributes(franch_seasonRecords)
-franch_seasonRecords <- as_tibble(season_records$data)
-
 
 
 
@@ -134,13 +118,9 @@ getFranSkaterRecord <- function(name = NULL, ID=NULL){
   dat
 }
 
-Franch_Sk8rRcrds <- getFranSkaterRecord(name = "Boston Bruins")
-Franch_Sk8rRcrds
+Bruin_Sk8rRcrds <- getFranSkaterRecord(name = "Boston Bruins")
+Bruin_Sk8rRcrds
 
-#Get skater record data to dataframe 
-skater_records <- getFranSkaterRecord()
-attributes(skater_records)
-franch_skaterRecords <- as_tibble(skater_records$data)
 
 
 #names(getFranSkaterRecord()[[1]])
@@ -216,7 +196,10 @@ wrapper <- function(baseAPI="Record", EndPoint="Franchise", franID=NULL, name=NU
 }
 
 skate <- wrapper(baseAPI="Record", EndPoint="skate", franID=NULL)
-wrappertest <- wrapper()
+skatsestat <- wrapper(baseAPI="Record", EndPoint="skate", franID=NULL)
+wrappertest <- wrapper(EndPoint="season")
+
+
 
 #Some analysis
 
@@ -224,8 +207,57 @@ wrappertest <- wrapper()
 plot_col <- ggplot(data = E, aes(x = division.name))
 plot_col + geom_bar() + labs(x = "Teams per Division")
 
-#are high performing goalies in the Boston Bruins more likely to be 
 
-#new variable called average points per season
+correlation <- cor(Bruin_Sk8rRcrds$penaltyMinutes, Bruin_Sk8rRcrds$points)
+scatter <- ggplot(Bruin_Sk8rRcrds, aes(x = penaltyMinutes, y = points))
+scatter + geom_point() + geom_smooth(method = lm, color = "yellow") + 
+  geom_text(x = 1500, y = 1250, size = 5, label = paste0("Correlation = ", 
+          round(correlation, 2))) + ylab("Total Career Points") + xlab("Total Career Penalty Minutes") +ggtitle("Correlation Between Career Points and Penalty Minutes")
 
-getwd()
+
+#what skater positions score most points
+#first make new variable which is average points per season
+
+positions <- wrapper(baseAPI="Record", EndPoint="skate", franID=NULL)
+posit_andAvg <- mutate(positions, avgGls = (positions$goals/positions$seasons))
+table1 <- posit_andAvg %>% group_by(positionCode) %>%   summarise(Average = mean(avgGls))
+kable(table1)
+
+#new dataset
+#Looks at the isolate only the current franchises. To do this, I'll pull the franchises
+#that are included in the Endpoint that lists upcoming games. Then, I'll join it with 
+#season record. We now have a massive dataset of current franchises full of lots of
+#useful statss
+C <- getStatData(expand="team.schedule.next")
+new <- inner_join(C, franch_seasonRecords, by = "franchiseId")
+new
+
+Bruin_Rcrds <- getFranSkaterRecord(name = "Boston Bruins")
+Bruin_Sk8rRcrds <- getFranSkaterRecord(name = "Boston Bruins")
+
+
+Bruin_Sk8rRcrds$rookiePoints <- ifelse(Bruin_Sk8rRcrds$rookiePoints >= 41, "High",
+       ifelse(Bruin_Sk8rRcrds$rookiePoints >= 21, "Elevated",
+              ifelse(Bruin_Sk8rRcrds$rookiePoints >= 11, "Moderate", "Average")))
+
+Bruin_Sk8rRcrds$goals <- ifelse(Bruin_Sk8rRcrds$goals >= 99, "Rockstar",
+                                       ifelse(Bruin_Sk8rRcrds$goals >= 31, "Star",
+                                              ifelse(Bruin_Sk8rRcrds$goals >= 11, "Valuable", "Ok")))
+
+#Does early talent indicate career success?
+Bruin_Sk8rRcrds$rookiePoints <- ifelse(Bruin_Sk8rRcrds$rookiePoints >= 41, "High",
+                                       ifelse(Bruin_Sk8rRcrds$rookiePoints >= 21, "Elevated",
+                                              ifelse(Bruin_Sk8rRcrds$rookiePoints >= 11, "Moderate", "Average")))
+
+Bruin_Sk8rRcrds$goals <- ifelse(Bruin_Sk8rRcrds$goals >= 99, "Rockstar",
+                                ifelse(Bruin_Sk8rRcrds$goals >= 31, "Star",
+                                       ifelse(Bruin_Sk8rRcrds$goals >= 11, "Valuable", "Ok")))
+
+Bruin_Rcrds <- getFranSkaterRecord(name = "Boston Bruins")
+selectBruins <- Bruin_Rcrds %>% select(penaltyMinutes, goals, seasons, assists, positionCode)
+bruinstable <- function(position){
+  data <- selectBruins %>% filter(positionCode == position) %>% select(-positionCode)
+  kable(apply(data, 2, summary), caption = paste("Summary of Position", position), 
+        digit = 1)
+}
+bruinstable("C")

@@ -64,7 +64,6 @@ FranchiseTots
  
 Return Franchise Season Records
 ```{r}
-#NEEDS NAME SEARCH
 getFranSeasonRecord <- function(name = NULL, ID=NULL){
   base_url <- "https://records.nhl.com/site/api"
   url <- paste0(base_url, "/", "franchise-season-records")
@@ -216,6 +215,17 @@ table1 <- posit_andAvg %>% group_by(positionCode) %>% summarise(Average = mean(a
 kable(table1)
 ```
 
+#### Get stats for current teams only  
+
+First Ill the isolate only the current franchises. To do this, I'll pull the franchises
+that are included in the Endpoint that lists upcoming games. Then, I'll join it with 
+season record. We now have a massive dataset of current franchises full of lots of useful stats
+```{r}
+C <- getStatData(expand="team.schedule.next")
+new <- inner_join(C, franch_seasonRecords, by = "franchiseId")
+new
+```
+
 
 #### Are Pugnacious Bruins More Likely to Be High Scorers?
 ```{r}
@@ -226,5 +236,38 @@ scatter + geom_point() + geom_smooth(method = lm, color = "yellow") +
           round(correlation, 2))) + ylab("Total Career Points") + xlab("Total Career Penalty Minutes") +ggtitle("Correlation Between Career Points and Penalty Minutes")
 ```
 
+#### Looking at Lifetime Stats by Skater Position
+```{r}
+Bruin_Rcrds <- getFranSkaterRecord(name = "Boston Bruins")
+selectBruins <- Bruin_Rcrds %>% select(penaltyMinutes, goals, seasons, assists, positionCode)
+bruinstable <- function(position){
+  data <- selectBruins %>% filter(positionCode == position) %>% select(-positionCode)
+  kable(apply(data, 2, summary), caption = paste("Summary of Position", position), 
+        digit = 1)
+}
+bruinstable("C")
+bruinstable("D")
+bruinstable("L")
+bruinstable("R")
+```
+
+#### Does early suscess lead to career success?
+We can see that the majority of players are average caliber (average on the Bruins still being
+an amazing athlete!), but that the players with "High" - over 41 rookie points, more likely to 
+Rockstar players during their careers.
+```{r}
+Bruin_Sk8rRcrds <- getFranSkaterRecord(name = "Boston Bruins")
+
+Bruin_Sk8rRcrds$rookiePoints <- ifelse(Bruin_Sk8rRcrds$rookiePoints >= 41, "High",
+                                       ifelse(Bruin_Sk8rRcrds$rookiePoints >= 21, "Elevated",
+                                              ifelse(Bruin_Sk8rRcrds$rookiePoints >= 11, "Moderate", "Average")))
+
+Bruin_Sk8rRcrds$goals <- ifelse(Bruin_Sk8rRcrds$goals >= 99, "Rockstar",
+                                ifelse(Bruin_Sk8rRcrds$goals >= 31, "Star",
+                                       ifelse(Bruin_Sk8rRcrds$goals >= 11, "Valuable", "Ok")))
+
+ggplot(Bruin_Sk8rRcrds, aes(x = rookiePoints, na.rm = TRUE)) + geom_bar(aes(fill = goals), position = "stack") + 
+  xlab("Boston Bruins Rookie Points") + scale_fill_discrete(name = "")
+```
 
 

@@ -1,5 +1,23 @@
-![Terry “Bloody”
-O’Reilly](https://en.wikipedia.org/wiki/File:Terry_O%27Reilly_78-79.JPG)
+-   [First, a list of packages used in this
+    exploration:](#first-a-list-of-packages-used-in-this-exploration)
+-   [Let’s dig into the API and take a look at accessing franchise
+    data:](#lets-dig-into-the-api-and-take-a-look-at-accessing-franchise-data)
+
+\#ST 558 Project \#1 - Exploring the NHL API with the Boston Bruins
+
+### First, a list of packages used in this exploration:
+
+``` r
+library(tidyverse)
+library(rmarkdown)
+library(httr) 
+library(jsonlite)
+library(DT)
+library(ggplot2)
+# rmarkdown::render("Project_1.Rmd", output_file="README.md")
+```
+
+### Let’s dig into the API and take a look at accessing franchise data:
 
 Return Parsed Franchise Data
 
@@ -94,6 +112,9 @@ getFranSeasonRecord <- function(name = NULL, ID=NULL){
 Franch_SnsRcrds <- getFranSeasonRecord(name = "Boston Bruins")
 ```
 
+    ## Warning in if (is.null(ID) == F) {: the condition has length > 1 and
+    ## only the first element will be used
+
     ## No encoding supplied: defaulting to UTF-8.
 
 ``` r
@@ -151,6 +172,9 @@ getFranGoalieRecord <- function(name = NULL, ID=NULL){
 Franch_GoalRcrds <- getFranGoalieRecord(name = "Boston Bruins")
 ```
 
+    ## Warning in if (is.null(ID) == F) {: the condition has length > 1 and
+    ## only the first element will be used
+
     ## No encoding supplied: defaulting to UTF-8.
 
 ``` r
@@ -202,6 +226,9 @@ getFranSkaterRecord <- function(name = NULL, ID=NULL){
 
 Franch_Sk8rRcrds <- getFranSkaterRecord(name = "Boston Bruins")
 ```
+
+    ## Warning in if (is.null(ID) == F) {: the condition has length > 1 and
+    ## only the first element will be used
 
     ## No encoding supplied: defaulting to UTF-8.
 

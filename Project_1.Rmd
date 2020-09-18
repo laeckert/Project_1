@@ -9,6 +9,8 @@ output:
 ---
 #ST 558 Project #1 - Exploring the NHL API with the Boston Bruins
 
+![Terry O'Reilly](C:/Users/leckert/Documents/NCSU/ST558)
+
 ### First, a list of packages used in this exploration:
 ```{r}
 library(tidyverse)
@@ -17,6 +19,7 @@ library(httr)
 library(jsonlite)
 library(DT)
 library(ggplot2)
+library(knitr)
 # rmarkdown::render("Project_1.Rmd", output_file="README.md")
 ```
 
@@ -123,8 +126,8 @@ getFranSkaterRecord <- function(name = NULL, ID=NULL){
   dat
 }
 
-Franch_Sk8rRcrds <- getFranSkaterRecord(name = "Boston Bruins")
-Franch_Sk8rRcrds
+Bruin_Sk8rRcrds <- getFranSkaterRecord(name = "Boston Bruins")
+Bruin_Sk8rRcrds
 ```
 
 Stats API - make a note that this only works for current teams
@@ -154,14 +157,8 @@ getStatData <- function(name = NULL, expand=NULL, season=NULL, teamID=NULL, stat
   dat
 }
 
-
-
-A <- getStatData(expand="team.roster", season="20142015")
-B <- getStatData(expand="team.schedule.previous")
-C <- getStatData(expand="team.schedule.next")
-D <- getStatData(expand="person.names")
-E <- getStatData(expand="team.stats")
 F <- getStatData(teamID = 6)
+F
 ```
 
 wrapper function
@@ -200,4 +197,34 @@ wrapper <- function(baseAPI="Record", EndPoint="Franchise", franID=NULL, name=NU
 plot_col <- ggplot(data = E, aes(x = division.name))
 plot_col + geom_bar() + labs(x = "Teams per Division")
 ```
+
+### Now that we have data, let's use it to answer some questions.  
+
+#### Goals by Skater Position  
+
+Not knowing much about hockey, I wondered which skating position usually scores the most goals. I used
+my wrapper to pull all skater records, grouped by position, and then found the mean number of points
+per season. This involved one extra step, which was creating a variable that calculated average
+number of goals per season. 
+```{r}
+#what skater positions score most points
+#first make new variable which is average points per season
+
+positions <- wrapper(baseAPI="Record", EndPoint="skate", franID=NULL)
+posit_andAvg <- mutate(positions, avgGls = (positions$goals/positions$seasons))
+table1 <- posit_andAvg %>% group_by(positionCode) %>% summarise(Average = mean(avgGls))
+kable(table1)
+```
+
+
+#### Are Pugnacious Bruins More Likely to Be High Scorers?
+```{r}
+correlation <- cor(Bruin_Sk8rRcrds$penaltyMinutes, Bruin_Sk8rRcrds$points)
+scatter <- ggplot(Bruin_Sk8rRcrds, aes(x = penaltyMinutes, y = points))
+scatter + geom_point() + geom_smooth(method = lm, color = "yellow") + 
+  geom_text(x = 1500, y = 1250, size = 5, label = paste0("Correlation = ", 
+          round(correlation, 2))) + ylab("Total Career Points") + xlab("Total Career Penalty Minutes") +ggtitle("Correlation Between Career Points and Penalty Minutes")
+```
+
+
 

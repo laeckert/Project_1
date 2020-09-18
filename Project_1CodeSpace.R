@@ -229,4 +229,3 @@ plot_col + geom_bar() + labs(x = "Teams per Division")
 #new variable called average points per season
 
 getwd()
-setwd

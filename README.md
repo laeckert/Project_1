@@ -2,8 +2,12 @@
     exploration:](#first-a-list-of-packages-used-in-this-exploration)
 -   [Let’s dig into the API and take a look at accessing franchise
     data:](#lets-dig-into-the-api-and-take-a-look-at-accessing-franchise-data)
+-   [Now that we have data, let’s use it to answer some
+    questions.](#now-that-we-have-data-lets-use-it-to-answer-some-questions.)
 
 \#ST 558 Project \#1 - Exploring the NHL API with the Boston Bruins
+
+![Terry O’Reilly](C:/Users/leckert/Documents/NCSU/ST558)
 
 ### First, a list of packages used in this exploration:
 
@@ -14,6 +18,7 @@ library(httr)
 library(jsonlite)
 library(DT)
 library(ggplot2)
+library(knitr)
 # rmarkdown::render("Project_1.Rmd", output_file="README.md")
 ```
 
@@ -224,7 +229,7 @@ getFranSkaterRecord <- function(name = NULL, ID=NULL){
   dat
 }
 
-Franch_Sk8rRcrds <- getFranSkaterRecord(name = "Boston Bruins")
+Bruin_Sk8rRcrds <- getFranSkaterRecord(name = "Boston Bruins")
 ```
 
     ## Warning in if (is.null(ID) == F) {: the condition has length > 1 and
@@ -233,7 +238,7 @@ Franch_Sk8rRcrds <- getFranSkaterRecord(name = "Boston Bruins")
     ## No encoding supplied: defaulting to UTF-8.
 
 ``` r
-Franch_Sk8rRcrds
+Bruin_Sk8rRcrds
 ```
 
     ## # A tibble: 910 x 30
@@ -290,15 +295,23 @@ getStatData <- function(name = NULL, expand=NULL, season=NULL, teamID=NULL, stat
   dat
 }
 
-
-
-A <- getStatData(expand="team.roster", season="20142015")
-B <- getStatData(expand="team.schedule.previous")
-C <- getStatData(expand="team.schedule.next")
-D <- getStatData(expand="person.names")
-E <- getStatData(expand="team.stats")
 F <- getStatData(teamID = 6)
+F
 ```
+
+    ## # A tibble: 1 x 29
+    ##      id name  link  abbreviation teamName locationName firstYearOfPlay
+    ##   <int> <chr> <chr> <chr>        <chr>    <chr>        <chr>          
+    ## 1     6 Bost~ /api~ BOS          Bruins   Boston       1924           
+    ## # ... with 22 more variables: shortName <chr>, officialSiteUrl <chr>,
+    ## #   franchiseId <int>, active <lgl>, venue.id <int>, venue.name <chr>,
+    ## #   venue.link <chr>, venue.city <chr>, venue.timeZone.id <chr>,
+    ## #   venue.timeZone.offset <int>, venue.timeZone.tz <chr>,
+    ## #   division.id <int>, division.name <chr>, division.nameShort <chr>,
+    ## #   division.link <chr>, division.abbreviation <chr>,
+    ## #   conference.id <int>, conference.name <chr>, conference.link <chr>,
+    ## #   franchise.franchiseId <int>, franchise.teamName <chr>,
+    ## #   franchise.link <chr>
 
 wrapper function
 
@@ -339,3 +352,57 @@ plot_col + geom_bar() + labs(x = "Teams per Division")
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-9-1.png)
+
+### Now that we have data, let’s use it to answer some questions.
+
+#### Goals by Skater Position
+
+Not knowing much about hockey, I wondered which skating position usually
+scores the most goals. I used my wrapper to pull all skater records,
+grouped by position, and then found the mean number of points per
+season. This involved one extra step, which was creating a variable that
+calculated average number of goals per season.
+
+``` r
+#what skater positions score most points
+#first make new variable which is average points per season
+
+positions <- wrapper(baseAPI="Record", EndPoint="skate", franID=NULL)
+```
+
+    ## Warning in if (is.null(ID) == F) {: the condition has length > 1 and
+    ## only the first element will be used
+
+    ## No encoding supplied: defaulting to UTF-8.
+
+``` r
+posit_andAvg <- mutate(positions, avgGls = (positions$goals/positions$seasons))
+table1 <- posit_andAvg %>% group_by(positionCode) %>% summarise(Average = mean(avgGls))
+```
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+``` r
+kable(table1)
+```
+
+| positionCode |   Average|
+|:-------------|---------:|
+| C            |  6.364477|
+| D            |  2.122197|
+| L            |  5.860032|
+| R            |  6.589049|
+
+#### Are Pugnacious Bruins More Likely to Be High Scorers?
+
+``` r
+correlation <- cor(Bruin_Sk8rRcrds$penaltyMinutes, Bruin_Sk8rRcrds$points)
+scatter <- ggplot(Bruin_Sk8rRcrds, aes(x = penaltyMinutes, y = points))
+scatter + geom_point() + geom_smooth(method = lm, color = "yellow") + 
+  geom_text(x = 1500, y = 1250, size = 5, label = paste0("Correlation = ", 
+          round(correlation, 2))) + ylab("Total Career Points") + xlab("Total Career Penalty Minutes") +ggtitle("Correlation Between Career Points and Penalty Minutes")
+```
+
+    ## `geom_smooth()` using formula 'y ~ x'
+
+![](README_files/figure-markdown_github/unnamed-chunk-11-1.png)

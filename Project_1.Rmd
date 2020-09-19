@@ -9,8 +9,6 @@ output:
 ---
 #ST 558 Project #1 - Exploring the NHL API with the Boston Bruins
 
-![Terry O'Reilly](C:/Users/leckert/Documents/NCSU/ST558)
-
 ### First, a list of packages used in this exploration:
 ```{r}
 library(tidyverse)
@@ -223,11 +221,12 @@ season record. We now have a massive dataset of current franchises full of lots 
 ```{r}
 C <- getStatData(expand="team.schedule.next")
 new <- inner_join(C, franch_seasonRecords, by = "franchiseId")
-new
+datatable(new, rownames = FALSE)
 ```
 
 
-#### Are Pugnacious Bruins More Likely to Be High Scorers?
+#### Are Pugnacious Bruins More Likely to Be High Scorers?  
+
 ```{r}
 correlation <- cor(Bruin_Sk8rRcrds$penaltyMinutes, Bruin_Sk8rRcrds$points)
 scatter <- ggplot(Bruin_Sk8rRcrds, aes(x = penaltyMinutes, y = points))
@@ -236,7 +235,8 @@ scatter + geom_point() + geom_smooth(method = lm, color = "yellow") +
           round(correlation, 2))) + ylab("Total Career Points") + xlab("Total Career Penalty Minutes") +ggtitle("Correlation Between Career Points and Penalty Minutes")
 ```
 
-#### Looking at Lifetime Stats by Skater Position
+#### Looking at Lifetime Stats by Skater Position  
+
 ```{r}
 Bruin_Rcrds <- getFranSkaterRecord(name = "Boston Bruins")
 selectBruins <- Bruin_Rcrds %>% select(penaltyMinutes, goals, seasons, assists, positionCode)
@@ -251,10 +251,27 @@ bruinstable("L")
 bruinstable("R")
 ```
 
-#### Does early suscess lead to career success?
+#### Does early suscess lead to career success?  
+
 We can see that the majority of players are average caliber (average on the Bruins still being
 an amazing athlete!), but that the players with "High" - over 41 rookie points, more likely to 
 Rockstar players during their careers.
+
+```{r}
+tbl <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
+kable(tbl[,,1], caption = "Centers")
+
+tbl <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
+kable(tbl[,,2], caption = "Defense")
+
+tbl <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
+kable(tbl[,,3], caption = "Left Wing")
+
+tbl <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
+kable(tbl[,,4], caption = "Right Wing")
+```
+
+To illustrate the above summary tables graphically, I have constructed a bar graph:
 ```{r}
 Bruin_Sk8rRcrds <- getFranSkaterRecord(name = "Boston Bruins")
 
@@ -268,6 +285,17 @@ Bruin_Sk8rRcrds$goals <- ifelse(Bruin_Sk8rRcrds$goals >= 99, "Rockstar",
 
 ggplot(Bruin_Sk8rRcrds, aes(x = rookiePoints, na.rm = TRUE)) + geom_bar(aes(fill = goals), position = "stack") + 
   xlab("Boston Bruins Rookie Points") + scale_fill_discrete(name = "")
+```
+
+
+#### What positions usually get the most assists?  
+
+We can see from the below boxplot that Center and Defense get more assists than Left Wing and
+Right Wing. I was surprised by this as I'd assumed Defense didnt get a lot of assists.
+```{r}
+Bruin_Rcrds <- getFranSkaterRecord(name = "Boston Bruins")
+ggplot(Bruin_Rcrds, aes(x = positionCode, y = mostAssistsOneSeason)) + geom_boxplot() + 
+  geom_jitter(aes(color = positionCode)) + ggtitle("Boxplot for Career Goals") + scale_fill_discrete(name = "Positions", labels = c("Center", "Defense", "Left Wing", "Right Wing"))
 ```
 
 

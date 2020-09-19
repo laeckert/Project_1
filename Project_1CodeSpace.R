@@ -230,7 +230,7 @@ kable(table1)
 #useful statss
 C <- getStatData(expand="team.schedule.next")
 new <- inner_join(C, franch_seasonRecords, by = "franchiseId")
-new
+
 
 Bruin_Rcrds <- getFranSkaterRecord(name = "Boston Bruins")
 Bruin_Sk8rRcrds <- getFranSkaterRecord(name = "Boston Bruins")
@@ -261,3 +261,38 @@ bruinstable <- function(position){
         digit = 1)
 }
 bruinstable("C")
+bruinstable("D")
+bruinstable("L")
+bruinstable("R")
+
+
+
+Bruin_Sk8rRcrds <- getFranSkaterRecord(name = "Boston Bruins")
+
+Bruin_Sk8rRcrds$rookiePoints <- ifelse(Bruin_Sk8rRcrds$rookiePoints >= 41, "High",
+                                       ifelse(Bruin_Sk8rRcrds$rookiePoints >= 21, "Elevated",
+                                              ifelse(Bruin_Sk8rRcrds$rookiePoints >= 11, "Moderate", "Average")))
+
+Bruin_Sk8rRcrds$goals <- ifelse(Bruin_Sk8rRcrds$goals >= 99, "Rockstar",
+                                ifelse(Bruin_Sk8rRcrds$goals >= 31, "Star",
+                                       ifelse(Bruin_Sk8rRcrds$goals >= 11, "Valuable", "Ok")))
+
+ggplot(Bruin_Sk8rRcrds, na.rm = TRUE, aes(x = rookiePoints, na.rm = TRUE)) + geom_bar(aes(fill = goals), position = "stack") + xlab("Boston Bruins Rookie Points") + scale_fill_discrete(name = "")
+
+tbl <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
+kable(tbl[,,1], caption = "Centers")
+
+tbl <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
+kable(tbl[,,2], caption = "Defense")
+
+tbl <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
+kable(tbl[,,3], caption = "Left Wing")
+
+tbl <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
+kable(tbl[,,4], caption = "Right Wing")
+
+Bruin_Rcrds <- getFranSkaterRecord(name = "Boston Bruins")
+ggplot(Bruin_Rcrds, aes(x = positionCode, y = mostAssistsOneSeason)) + geom_boxplot() + 
+  geom_jitter(aes(color = positionCode)) + ggtitle("Boxplot for Career Goals") + scale_fill_discrete(name = "Positions", labels = c("Center", "Defense", "Left Wing", "Right Wing"))
+
+

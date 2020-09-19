@@ -296,3 +296,14 @@ ggplot(Bruin_Rcrds, aes(x = positionCode, y = mostAssistsOneSeason)) + geom_boxp
   geom_jitter(aes(color = positionCode)) + ggtitle("Boxplot for Career Goals") + scale_fill_discrete(name = "Positions", labels = c("Center", "Defense", "Left Wing", "Right Wing"))
 
 
+tbl1 <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
+kable(tbl1[,,1], caption = "Centers")
+
+tbl2 <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
+kable(tbl2[,,2], caption = "Defense")
+
+tbl3 <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
+kable(tbl3[,,3], caption = "Left Wing")
+
+tbl4 <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
+kable(tbl4[,,4], caption = "Right Wing")

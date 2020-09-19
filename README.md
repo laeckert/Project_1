@@ -3,15 +3,57 @@ Project 1 - Hockey Vignette
 Lucy Eckert
 9/13/2020
 
+  - [First, a list of packages used in this
+    exploration:](#first-a-list-of-packages-used-in-this-exploration)
+  - [Let’s dig into the API and take a look at accessing franchise
+    data:](#lets-dig-into-the-api-and-take-a-look-at-accessing-franchise-data)
+  - [Now that we have data, let’s use it to answer some
+    questions.](#now-that-we-have-data-lets-use-it-to-answer-some-questions.)
+      - [Goals by Skater Position](#goals-by-skater-position)
+      - [Get stats for current teams
+        only](#get-stats-for-current-teams-only)
+      - [Are Pugnacious Bruins More Likely to Be High
+        Scorers?](#are-pugnacious-bruins-more-likely-to-be-high-scorers)
+      - [Looking at Lifetime Stats by Skater
+        Position](#looking-at-lifetime-stats-by-skater-position)
+      - [Does early suscess lead to career
+        success?](#does-early-suscess-lead-to-career-success)
+      - [What positions usually get the most
+        assists?](#what-positions-usually-get-the-most-assists)
+
 \#ST 558 Project \#1 - Exploring the NHL API with the Boston Bruins
 
 ### First, a list of packages used in this exploration:
 
 ``` r
 library(tidyverse)
+```
+
+    ## -- Attaching packages --------------------------------------- tidyverse 1.3.0 --
+
+    ## v ggplot2 3.3.2     v purrr   0.3.4
+    ## v tibble  3.0.3     v dplyr   1.0.1
+    ## v tidyr   1.1.1     v stringr 1.4.0
+    ## v readr   1.3.1     v forcats 0.5.0
+
+    ## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+    ## x dplyr::filter() masks stats::filter()
+    ## x dplyr::lag()    masks stats::lag()
+
+``` r
 library(rmarkdown)
 library(httr) 
 library(jsonlite)
+```
+
+    ## 
+    ## Attaching package: 'jsonlite'
+
+    ## The following object is masked from 'package:purrr':
+    ## 
+    ##     flatten
+
+``` r
 library(ggplot2)
 library(knitr)
 # rmarkdown::render("Project_1.Rmd", output_file="README.md")
@@ -500,8 +542,8 @@ the Bruins still being an amazing athlete\!), but that the players with
 their careers.
 
 ``` r
-tbl <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
-kable(tbl[,,1], caption = "Centers")
+tbl1 <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
+kable(tbl1[,,1], caption = "Centers")
 ```
 
 |     |  0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 39 | 40 | 41 | 42 | 43 | 45 | 46 | 47 | 49 | 50 | 51 | 56 | 59 | 62 | 65 | 69 | 92 | 102 |
@@ -640,8 +682,8 @@ kable(tbl[,,1], caption = "Centers")
 Centers
 
 ``` r
-tbl <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
-kable(tbl[,,2], caption = "Defense")
+tbl2 <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
+kable(tbl2[,,2], caption = "Defense")
 ```
 
 |     |  0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 39 | 40 | 41 | 42 | 43 | 45 | 46 | 47 | 49 | 50 | 51 | 56 | 59 | 62 | 65 | 69 | 92 | 102 |
@@ -780,8 +822,8 @@ kable(tbl[,,2], caption = "Defense")
 Defense
 
 ``` r
-tbl <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
-kable(tbl[,,3], caption = "Left Wing")
+tbl3 <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
+kable(tbl3[,,3], caption = "Left Wing")
 ```
 
 |     |  0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 39 | 40 | 41 | 42 | 43 | 45 | 46 | 47 | 49 | 50 | 51 | 56 | 59 | 62 | 65 | 69 | 92 | 102 |
@@ -920,8 +962,8 @@ kable(tbl[,,3], caption = "Left Wing")
 Left Wing
 
 ``` r
-tbl <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
-kable(tbl[,,4], caption = "Right Wing")
+tbl4 <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
+kable(tbl4[,,4], caption = "Right Wing")
 ```
 
 |     |  0 |  1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 39 | 40 | 41 | 42 | 43 | 45 | 46 | 47 | 49 | 50 | 51 | 56 | 59 | 62 | 65 | 69 | 92 | 102 |

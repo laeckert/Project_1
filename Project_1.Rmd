@@ -2,7 +2,10 @@
 title: "Project 1 - Hockey Vignette"
 author: "Lucy Eckert"
 date: "9/13/2020"
-output: rmarkdown::github_document
+output:
+  github_document:
+    toc: true
+    toc_depth: 4
 ---
 #ST 558 Project #1 - Exploring the NHL API with the Boston Bruins
 
@@ -253,17 +256,17 @@ an amazing athlete!), but that the players with "High" - over 41 rookie points, 
 Rockstar players during their careers.
 
 ```{r}
-tbl <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
-kable(tbl[,,1], caption = "Centers")
+tbl1 <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
+kable(tbl1[,,1], caption = "Centers")
 
-tbl <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
-kable(tbl[,,2], caption = "Defense")
+tbl2 <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
+kable(tbl2[,,2], caption = "Defense")
 
-tbl <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
-kable(tbl[,,3], caption = "Left Wing")
+tbl3 <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
+kable(tbl3[,,3], caption = "Left Wing")
 
-tbl <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
-kable(tbl[,,4], caption = "Right Wing")
+tbl4 <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
+kable(tbl4[,,4], caption = "Right Wing")
 ```
 
 To illustrate the above summary tables graphically, I have constructed a bar graph:

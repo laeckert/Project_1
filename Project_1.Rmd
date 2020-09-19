@@ -255,18 +255,19 @@ We can see that the majority of players are average caliber (average on the Brui
 an amazing athlete!), but that the players with "High" - over 41 rookie points, more likely to 
 Rockstar players during their careers.
 
-```{r}
+```{r, eval = FALSE}
+#Dr. Post - these are rendering as a series of 0s and 1s, so I am adding eval = FALSE for now.
 tbl1 <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
-tbl1[,,1]
+kable(tbl1[,,1], caption = "Centers")
 
 tbl2 <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
-tbl2[,,2]
+kable(tbl2[,,2], caption = "Defense")
 
 tbl3 <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
-tbl3[,,3]
+kable(tbl3[,,3], caption = "Left Wing")
 
 tbl4 <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
-tbl4[,,4]
+kable(tbl4[,,4], caption = "Right Wing")
 ```
 
 To illustrate the above summary tables graphically, I have constructed a bar graph:

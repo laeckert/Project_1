@@ -2,10 +2,7 @@
 title: "Project 1 - Hockey Vignette"
 author: "Lucy Eckert"
 date: "9/13/2020"
-output:
-  md_document:
-    variant: markdown_github
-    toc: true
+output: rmarkdown::github_document
 ---
 #ST 558 Project #1 - Exploring the NHL API with the Boston Bruins
 
@@ -15,7 +12,6 @@ library(tidyverse)
 library(rmarkdown)
 library(httr) 
 library(jsonlite)
-library(DT)
 library(ggplot2)
 library(knitr)
 # rmarkdown::render("Project_1.Rmd", output_file="README.md")
@@ -221,7 +217,6 @@ season record. We now have a massive dataset of current franchises full of lots 
 ```{r}
 C <- getStatData(expand="team.schedule.next")
 new <- inner_join(C, franch_seasonRecords, by = "franchiseId")
-datatable(new, rownames = FALSE)
 ```
 
 

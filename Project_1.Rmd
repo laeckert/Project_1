@@ -257,16 +257,16 @@ Rockstar players during their careers.
 
 ```{r}
 tbl1 <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
-kable(tbl1[,,1], caption = "Centers")
+tbl1[,,1]
 
 tbl2 <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
-kable(tbl2[,,2], caption = "Defense")
+tbl2[,,2]
 
 tbl3 <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
-kable(tbl3[,,3], caption = "Left Wing")
+tbl3[,,3]
 
 tbl4 <- table(Bruin_Sk8rRcrds$goals, Bruin_Sk8rRcrds$rookiePoints, Bruin_Sk8rRcrds$positionCode)
-kable(tbl4[,,4], caption = "Right Wing")
+tbl4[,,4]
 ```
 
 To illustrate the above summary tables graphically, I have constructed a bar graph:
